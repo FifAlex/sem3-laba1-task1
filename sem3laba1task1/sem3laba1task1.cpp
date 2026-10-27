@@ -104,34 +104,22 @@ public:
     }
 
     void printTree(ostream& os = cout) const {
-        printTreeImpl(os, "", true, true);
+        printTree(0);
     }
 
 private:
-    void printTreeImpl(ostream& os, const string& prefix, bool isLast, bool isRoot) const {
-        if (isRoot) {
-            os << toString() << "\n";
-        }
-        else {
-            os << prefix << (isLast ? "`-- " : "|-- ") << toString() << "\n";
-        }
+    void printTree(int indent = 0) const {
+    string pad(indent, ' ');
+    cout << pad << getName() << "/\n";
 
-        const string childPrefix = isRoot
-            ? ""
-            : prefix + (isLast ? "    " : "|   ");
-
-        size_t index = 0;
-        for (const auto& pair : elements) {
-            const bool childIsLast = (++index == elements.size());
-            if (auto* dir = dynamic_cast<Directory*>(pair.second.get())) {
-                dir->printTreeImpl(os, childPrefix, childIsLast, false);
-            }
-            else {
-                os << childPrefix << (childIsLast ? "`-- " : "|-- ")
-                    << pair.second->toString() << "\n";
-            }
+    for (const auto& [name_, child] : elements) {
+        if (auto* dir = dynamic_cast<Directory*>(child.get())) {
+            dir->printTree(indent + 2);
+        } else {
+            cout << pad << "  " << child->getName() << '\n';
         }
     }
+}
 
 
 public:
